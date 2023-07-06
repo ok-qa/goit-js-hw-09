@@ -1,30 +1,25 @@
-//get color
+//create random color
 function getRandomHexColor() {
-  return `#${Math.floor(Math.random() * 16777215)
-    .toString(16)
-    .padStart(6, 0)}`;
+  return `#${Math.floor(Math.random() * 0xffffff).toString(16)}`;
 }
 
 const startBtn = document.querySelector('[data-start]');
 const stopBtn = document.querySelector('[data-stop]');
 let intervalId = null;
 
-//add eventListener to the button to start changing BG color
-// and disable "Start" button
-startBtn.addEventListener('click', function () {
-  if (!intervalId) {
-    intervalId = setInterval(function () {
-      const currentColor = getRandomHexColor();
-      document.body.style.background = currentColor;
-    }, 1000);
-    startBtn.disabled = true;
-  }
-});
+// add eventListeners to buttons
+startBtn.addEventListener('click', onStart);
+stopBtn.addEventListener('click', onStop);
 
-//add eventListener to the "Stop" button to stop changing,
-//enable "Start" button
-stopBtn.addEventListener('click', function () {
+//start
+function onStart() {
+  intervalId = setInterval(() => {
+    document.body.style.background = getRandomHexColor();
+  }, 1000);
+  startBtn.disabled = true;
+}
+
+function onStop() {
   clearInterval(intervalId);
-  intervalId = undefined;
   startBtn.disabled = false;
-});
+}
