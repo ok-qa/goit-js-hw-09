@@ -2,9 +2,11 @@ const startBtn = document.querySelector('[data-start]');
 const stopBtn = document.querySelector('[data-stop]');
 let intervalId;
 
-//create random color
+//get color
 function getRandomHexColor() {
-    return `#${Math.floor(Math.random() * 0xffffff).toString(16)}`;
+  return `#${Math.floor(Math.random() * 16777215)
+    .toString(16)
+    .padStart(6, 0)}`;
 }
 
 
