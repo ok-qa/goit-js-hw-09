@@ -1,7 +1,3 @@
-const startBtn = document.querySelector('[data-start]');
-const stopBtn = document.querySelector('[data-stop]');
-let intervalId;
-
 //get color
 function getRandomHexColor() {
   return `#${Math.floor(Math.random() * 16777215)
@@ -9,11 +5,14 @@ function getRandomHexColor() {
     .padStart(6, 0)}`;
 }
 
+const startBtn = document.querySelector('[data-start]');
+const stopBtn = document.querySelector('[data-stop]');
+let intervalId = null;
 
 //add eventListener to the button to start changing BG color
 // and disable "Start" button
-startBtn.addEventListener('click', function() {
-  if(intervalId) {
+startBtn.addEventListener('click', function () {
+  if (!intervalId) {
     intervalId = setInterval(function () {
       const currentColor = getRandomHexColor();
       document.body.style.background = currentColor;
@@ -24,7 +23,7 @@ startBtn.addEventListener('click', function() {
 
 //add eventListener to the "Stop" button to stop changing,
 //enable "Start" button
-stopBtn.addEventListener('click', function() {
+stopBtn.addEventListener('click', function () {
   clearInterval(intervalId);
   intervalId = undefined;
   startBtn.disabled = false;
