@@ -15,6 +15,7 @@ stopBtn.addEventListener('click', onStop);
 function onStart() {
   intervalId = setInterval(() => {
     document.body.style.background = getRandomHexColor();
+    console.log('current color is ' + document.body.style.background);
   }, 1000);
   startBtn.disabled = true;
 }
