@@ -52,7 +52,7 @@ startBtn.addEventListener('click', function () {
         timerIsActive = true;
         dateTimePicker.set('readOnly', true);
     }
-})
+});
 
 //timer update
 function updateTimer(timeDifference) {
