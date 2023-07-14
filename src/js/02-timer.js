@@ -61,10 +61,10 @@ startBtn.addEventListener('click', () => {
 
       let remainingTime = convertMs(timeDiff);
       const timeUnits = {
-        days: daysSpan,
-        hours: hoursSpan,
-        minutes: minutesSpan,
-        seconds: secondsSpan,
+        days: dataDays,
+        hours: dataHours,
+        minutes: dataMinutes,
+        seconds: dataSeconds,
       };
 
       // Оновлення відображення часу на сторінці
