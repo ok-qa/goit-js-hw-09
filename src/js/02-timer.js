@@ -3,6 +3,8 @@ import flatpickr from 'flatpickr';
 //Import flatpickr styles
 import 'flatpickr/dist/flatpickr.min.css';
 
+import Notiflix from 'notiflix';
+
 //add querySelectors
 const startBtn = document.querySelector('[data-start]');
 const dataDays = document.querySelector('[data-days]');
@@ -33,7 +35,7 @@ const picker = {
   },
 };
 
-//chose date and time 
+//chose date and time
 flatpickr('input#datetime-picker', picker);
 
 let targetDate = null;
