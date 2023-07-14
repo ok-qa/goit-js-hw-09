@@ -11,63 +11,37 @@ const dataMinutes = document.querySelector('[data-minutes]');
 const dataSeconds = document.querySelector('[data-seconds]');
 
 //initialize picker
-const picker = {
+picker('#datetime-picker', {
   enableTime: true,
   time_24hr: true,
   defaultDate: new Date(),
   minuteIncrement: 1,
-  onClose(selectedDates) {
-    targetDate = selectedDates[0];
-    if (targetDate.getTime() < picker.defaultDate.getTime()) {
-      alertSound.play();
-      Notiflix.Report.warning(
-        'Please choose a date in the future!'
-      );
-      startBtn.classList.remove('valid-date');
-      startBtn.classList.add('invalid-date');
+  onClose(chosenDate) {
+    const targetDate = chosenDate[0];
+
+    if (targetDate) {
+      startBtn.disabled = false;
     } else {
-      startBtn.classList.remove('invalid-date');
-      startBtn.classList.add('valid-date');
+      startBtn.disabled = true;
     }
   },
-};
-
-flatpickr('input#datetime-picker', picker);
-
-let targetDate = null;
-let timer = null;
-const interval = 1000;
+});
 
 startBtn.addEventListener('click', () => {
-    if (targetDate && !timer) {
-        timer = setInterval(() => {
-            let currentDateInMs = new Date().getTime();
-            let timeDiff = targetDate.getTime() - currentDateInMs;
-            if (timeDiff <= 0) {
-                clearInterval(timer);
-                timer = null;
-             
-            }
+  const targetDate = picker.value;
+  const timeDifference = calculateTimeDifference(targetDate);
 
-            return;
-        });
+  if (timeDifference) {
+    startCountdown(timeDifference);
+    startButton.disabled = true;
+  }
+});
 
-          let remainingTime = convertMs(timeDiff);
-        const timeUnits = {
-            days: daysSpan,
-            hours: hoursSpan,
-            minutes: minutesSpan,
-            seconds: secondsSpan,
-        };
-          
-        // // Оновлення відображення часу на сторінці
-        // Object.keys(timeUnits).forEach((unit) => {
-        //     timeUnits[unit].textContent = String(remainingTime[unit]).padStart(2, '0');
-        // });
-          
-    }  
 
-      }, interval);
+const interval = 1000;
+
+
+
 
 
 function getTimeSegmentElements(segmentElement) {
@@ -135,58 +109,92 @@ function updateTimeSegment(segmentElement, timeValue) {
   );
 }
 
-function updateTimeSection(sectionID, timeValue) {
-  const firstNumber = Math.floor(timeValue / 10) || 0;
-  const secondNumber = timeValue % 10 || 0;
-  const sectionElement = document.getElementById(sectionID);
-  const timeSegments = sectionElement.querySelectorAll('.time-segment');
+function startCountdown(time) {
+  let { days, hours, minutes, seconds } = time;
 
-  updateTimeSegment(timeSegments[0], firstNumber);
-  updateTimeSegment(timeSegments[1], secondNumber);
-}
+    const countdownInterval = setInterval(() => {
+        if (days === 0 && hours === 0 && minutes === 0 && seconds === 0) {
+            clearInterval(countdownInterval);
+            Notiflix.Notify.success('Countdown finished!');
+            return;
+        }
 
-function getTimeRemaining(targetDateTime) {
-  const nowTime = Date.now();
-  const complete = nowTime >= targetDateTime;
+        seconds--;
 
-  if (complete) {
+        if (seconds < 0) {
+            seconds = 59;
+            minutes--;
+
+            if (minutes < 0) {
+                minutes = 59;
+                hours--;
+
+                if (hours < 0) {
+                    hours = 23;
+                    days--;
+                }
+            }
+        }
+
+        //daysValue.textContent = addLeadingZero(days);
+        //hoursValue.textContent = addLeadingZero(hours);
+        //minutesValue.textContent = addLeadingZero(minutes);
+        //secondsValue.textContent = addLeadingZero(seconds);
+    }); //, 1000);
+
+  function updateTimeSection(sectionID, timeValue) {
+    const firstNumber = Math.floor(timeValue / 10) || 0;
+    const secondNumber = timeValue % 10 || 0;
+    const sectionElement = document.getElementById(sectionID);
+    const timeSegments = sectionElement.querySelectorAll('.time-segment');
+
+    updateTimeSegment(timeSegments[0], firstNumber);
+    updateTimeSegment(timeSegments[1], secondNumber);
+  }
+
+  function getTimeRemaining(targetDateTime) {
+    const nowTime = Date.now();
+    const complete = nowTime >= targetDateTime;
+
+    if (complete) {
+      return {
+        complete,
+        seconds: 0,
+        minutes: 0,
+        hours: 0,
+      };
+    }
+
+    const secondsRemaining = Math.floor((targetDateTime - nowTime) / 1000);
+    const hours = Math.floor(secondsRemaining / 60 / 60);
+    const minutes = Math.floor(secondsRemaining / 60) - hours * 60;
+    const seconds = secondsRemaining % 60;
+
     return {
       complete,
-      seconds: 0,
-      minutes: 0,
-      hours: 0,
+      seconds,
+      minutes,
+      hours,
     };
   }
 
-  const secondsRemaining = Math.floor((targetDateTime - nowTime) / 1000);
-  const hours = Math.floor(secondsRemaining / 60 / 60);
-  const minutes = Math.floor(secondsRemaining / 60) - hours * 60;
-  const seconds = secondsRemaining % 60;
+  function updateAllSegments() {
+    //const timeRemainingBits = getTimeRemaining(new Date(targetDate).getTime());
 
-  return {
-    complete,
-    seconds,
-    minutes,
-    hours,
-  };
-}
+    updateTimeSection('seconds', timeRemainingBits.seconds);
+    updateTimeSection('minutes', timeRemainingBits.minutes);
+    updateTimeSection('hours', timeRemainingBits.hours);
 
-function updateAllSegments() {
-  const timeRemainingBits = getTimeRemaining(new Date(targetDate).getTime());
-
-  updateTimeSection('seconds', timeRemainingBits.seconds);
-  updateTimeSection('minutes', timeRemainingBits.minutes);
-  updateTimeSection('hours', timeRemainingBits.hours);
-
-  return timeRemainingBits.complete;
-}
-
-const countdownTimer = setInterval(() => {
-  const isComplete = updateAllSegments();
-
-  if (isComplete) {
-    clearInterval(countdownTimer);
+    return timeRemainingBits.complete;
   }
-}, interval);
 
-updateAllSegments();
+  const countdownTimer = setInterval(() => {
+    const isComplete = updateAllSegments();
+
+    if (isComplete) {
+      clearInterval(countdownTimer);
+    }
+  }, interval);
+
+  updateAllSegments();
+}
