@@ -18,9 +18,9 @@ const picker = {
   minuteIncrement: 1,
   onClose(selectedDates) {
     targetDate = selectedDates[0];
-    if (targetDate.getTime() < options.defaultDate.getTime()) {
+    if (targetDate.getTime() < picker.defaultDate.getTime()) {
       Notiflix.Report.warning(
-        "Sorry, it is not a valid date",
+        'Sorry, it is not a valid date',
         'Please chose a date in the future',
         'OK'
       );
