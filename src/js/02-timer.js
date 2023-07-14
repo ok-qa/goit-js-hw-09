@@ -103,23 +103,11 @@ startBtn.addEventListener('click', () => {
             }
           }, 1000);
 
-      }, interval);
-  }
-});
-
-
-
-// const targetDate = new Date();
-//targetDate.setHours(targetDate.getHours() + 5);
-
-function getTimeSegmentElements(segmentElement) {
-  const segmentDisplay = segmentElement.querySelector('.segment-display');
-  const segmentDisplayTop = segmentDisplay.querySelector(
-    '.segment-display__top'
-  );
-  const segmentDisplayBottom = segmentDisplay.querySelector(
-    '.segment-display__bottom'
-  );
+        startBtn.disabled = true;
+        timerIsActive = true;
+        dateTimePicker.set('readOnly', true);
+    }
+})
 
   const segmentOverlay = segmentDisplay.querySelector('.segment-overlay');
   const segmentOverlayTop = segmentOverlay.querySelector(
@@ -222,7 +210,3 @@ function updateAllSegments() {
 
   return timeRemainingBits.complete;
 }
-
-
-
-updateAllSegments();
