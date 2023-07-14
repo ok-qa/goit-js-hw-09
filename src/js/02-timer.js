@@ -2,90 +2,227 @@
 import flatpickr from 'flatpickr';
 //Import flatpickr styles
 import 'flatpickr/dist/flatpickr.min.css';
+//import Notlifix
+import Notiflix from 'notiflix';
 
 //add querySelectors
-const startBtn = document.querySelector('[data-start]');
+const startBtn = document.querySelector('button[data-start]');
 const dataDays = document.querySelector('[data-days]');
 const dataHours = document.querySelector('[data-hours]');
 const dataMinutes = document.querySelector('[data-minutes]');
 const dataSeconds = document.querySelector('[data-seconds]');
-let timerIsActive = false;
 
-
-//initialize flatpickr for date-time choosing
-const dateTimePicker = flatpickr('#datetime-picker', {
+const pickDateTime = {
   enableTime: true,
   time_24hr: true,
   defaultDate: new Date(),
   minuteIncrement: 1,
-  onClose(pickedDates) {
-    const endDate = pickedDates[0];
-    const currentDate = new Date();
-
-    if (!endDate || endDate < currentDate) {
-      window.alert('Please choose the date in the future!');
-      startBtn.disabled = true;
+  onClose(selectedDates) {
+    targetDate = selectedDates[0];
+    if (targetDate.getTime() < options.defaultDate.getTime()) {
+      alertSound.play();
+      Notiflix.Report.warning(
+        'Please choose a date in future'
+      );
+      startBtn.classList.remove('valid-date');
+      startBtn.classList.add('invalid-date');
     } else {
-      startBtn.disabled = false;
+      startBtn.classList.remove('invalid-date');
+      startBtn.classList.add('valid-date');
     }
   },
+};
+
+flatpickr('input#datetime-picker', pickDateTime);
+
+//start button event listener
+startBtn.addEventListener('click', () => {
+  if (targetDate && !timer) { 
+      timer = setInterval(() => {
+          let currentDateInMs = new Date().getTime();
+          let timeDiff = targetDate.getTime() - currentDateInMs;
+          if (timeDiff <= 0) {
+              clearInterval(timer);
+              timer = null; 
+              
+          }
+
+          function getTimeRemaining(targetDateTime) {
+            const nowTime = Date.now();
+            const complete = nowTime >= targetDateTime;
+
+            if (complete) {
+              return {
+                complete,
+                seconds: 0,
+                minutes: 0,
+                hours: 0,
+              };
+            }
+
+            const secondsRemaining = Math.floor(
+              (targetDateTime - nowTime) / 1000
+            );
+            const hours = Math.floor(secondsRemaining / 60 / 60);
+            const minutes = Math.floor(secondsRemaining / 60) - hours * 60;
+            const seconds = secondsRemaining % 60;
+
+            return {
+              complete,
+              seconds,
+              minutes,
+              hours,
+            };
+          }
+
+        //   let remainingTime = convertMs(timeDiff);
+        //   const timeUnits = {
+        //       days: daysSpan,
+        //       hours: hoursSpan,
+        //       minutes: minutesSpan,
+        //       seconds: secondsSpan,
+        //   };
+          
+          // time update
+          function updateTimeSection(sectionID, timeValue) {
+            const firstNumber = Math.floor(timeValue / 10) || 0;
+            const secondNumber = timeValue % 10 || 0;
+            const sectionElement = document.getElementById(sectionID);
+            const timeSegments =
+              sectionElement.querySelectorAll('.time-segment');
+
+            updateTimeSegment(timeSegments[0], firstNumber);
+            updateTimeSegment(timeSegments[1], secondNumber);
+          }
+          
+          const countdownTimer = setInterval(() => {
+            const isComplete = updateAllSegments();
+
+            if (isComplete) {
+              clearInterval(countdownTimer);
+            }
+          }, 1000);
+
+      }, interval);
+  }
 });
 
-//Event Listener for the Start-button
-startBtn.disabled = true;
-startBtn.addEventListener('click', function () { 
-    if (!timerIsActive) { 
-        const endDate = dateTimePicker.pickedDates[0];
-        const currentDate = new Date();
-        let timeDifference = endDate.getTime() - currentDate.getTime();
-        const interval = setInterval(function () {
-            timeDifference -= 1000;
-            updateTimer(timeDifference);
-            if (timeDifference <= 0) {
-                clearInterval(interval);
-                timerIsActive = false;
-                dateTimePicker.set('readOnly', false);
-            }
-        }, 1000);
 
-        startBtn.disabled = true;
-        timerIsActive = true;
-        dateTimePicker.set('readOnly', true);
-    }
-})
 
-//timer update
-function updateTimer(timeDifference) {
-    const { days, hours, minutes, seconds } = convertMs(timeDifference);
-    dataDays.textContent = addLeadingZero(days);
-    dataHours.textContent = addLeadingZero(hours);
-    dataMinutes.textContent = addLeadingZero(minutes);
-    dataSeconds.textContent = addLeadingZero(seconds);
+// const targetDate = new Date();
+//targetDate.setHours(targetDate.getHours() + 5);
 
-    if (timeDifference <= 0) { 
-      dataDays.textContent = '00';
-    dataHours.textContent = '00';
-    dataMinutes.textContent = '00';
-        dataSeconds.textContent = '00';
-    }
+function getTimeSegmentElements(segmentElement) {
+  const segmentDisplay = segmentElement.querySelector('.segment-display');
+  const segmentDisplayTop = segmentDisplay.querySelector(
+    '.segment-display__top'
+  );
+  const segmentDisplayBottom = segmentDisplay.querySelector(
+    '.segment-display__bottom'
+  );
+
+  const segmentOverlay = segmentDisplay.querySelector('.segment-overlay');
+  const segmentOverlayTop = segmentOverlay.querySelector(
+    '.segment-overlay__top'
+  );
+  const segmentOverlayBottom = segmentOverlay.querySelector(
+    '.segment-overlay__bottom'
+  );
+
+  return {
+    segmentDisplayTop,
+    segmentDisplayBottom,
+    segmentOverlay,
+    segmentOverlayTop,
+    segmentOverlayBottom,
+  };
 }
 
-// convert milliseconds to the appropriate parameters
-function convertMs(ms) {
-  const second = 1000;
-  const minute = second * 60;
-  const hour = minute * 60;
-  const day = hour * 24;
-  
-  const days = Math.floor(ms / day);
-  const hours = Math.floor((ms % day) / hour);
-  const minutes = Math.floor(((ms % day) % hour) / minute);
-  const seconds = Math.floor((((ms % day) % hour) % minute) / second);
-  
-  return { days, hours, minutes, seconds };
+function updateSegmentValues(displayElement, overlayElement, value) {
+  displayElement.textContent = value;
+  overlayElement.textContent = value;
 }
 
-// add leading Zero
-function addLeadingZero(value) {
-  return value.toString().padStart(2, '0');
+function updateTimeSegment(segmentElement, timeValue) {
+  const segmentElements = getTimeSegmentElements(segmentElement);
+
+  if (
+    parseInt(segmentElements.segmentDisplayTop.textContent, 10) === timeValue
+  ) {
+    return;
+  }
+
+  segmentElements.segmentOverlay.classList.add('flip');
+
+  updateSegmentValues(
+    segmentElements.segmentDisplayTop,
+    segmentElements.segmentOverlayBottom,
+    timeValue
+  );
+
+  function finishAnimation() {
+    segmentElements.segmentOverlay.classList.remove('flip');
+    updateSegmentValues(
+      segmentElements.segmentDisplayBottom,
+      segmentElements.segmentOverlayTop,
+      timeValue
+    );
+
+    this.removeEventListener('animationend', finishAnimation);
+  }
+
+  segmentElements.segmentOverlay.addEventListener(
+    'animationend',
+    finishAnimation
+  );
 }
+
+// function updateTimeSection(sectionID, timeValue) {
+//   const firstNumber = Math.floor(timeValue / 10) || 0;
+//   const secondNumber = timeValue % 10 || 0;
+//   const sectionElement = document.getElementById(sectionID);
+//   const timeSegments = sectionElement.querySelectorAll('.time-segment');
+
+//   updateTimeSegment(timeSegments[0], firstNumber);
+//   updateTimeSegment(timeSegments[1], secondNumber);
+// }
+
+// function getTimeRemaining(targetDateTime) {
+//   const nowTime = Date.now();
+//   const complete = nowTime >= targetDateTime;
+
+//   if (complete) {
+//     return {
+//       complete,
+//       seconds: 0,
+//       minutes: 0,
+//       hours: 0,
+//     };
+//   }
+
+//   const secondsRemaining = Math.floor((targetDateTime - nowTime) / 1000);
+//   const hours = Math.floor(secondsRemaining / 60 / 60);
+//   const minutes = Math.floor(secondsRemaining / 60) - hours * 60;
+//   const seconds = secondsRemaining % 60;
+
+//   return {
+//     complete,
+//     seconds,
+//     minutes,
+//     hours,
+//   };
+// }
+
+function updateAllSegments() {
+  const timeRemainingBits = getTimeRemaining(new Date(targetDate).getTime());
+
+  updateTimeSection('seconds', timeRemainingBits.seconds);
+  updateTimeSection('minutes', timeRemainingBits.minutes);
+  updateTimeSection('hours', timeRemainingBits.hours);
+
+  return timeRemainingBits.complete;
+}
+
+
+
+updateAllSegments();

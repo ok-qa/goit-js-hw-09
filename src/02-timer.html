@@ -1,40 +1,144 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Countdown timer</title>
-    <link rel="stylesheet" href="css/common.css" />
-    <link rel="stylesheet" href="css/02-timer.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-     
-  </head>
-  <body>
-    <p><a href="index.html">Go back</a></p>
 
-    <input type="text" id="datetime-picker" />
-    <button type="button" data-start>Start</button>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Countdown timer</title>
+  <link rel="stylesheet" href="css/common.css" />
+  <link rel="stylesheet" href="css/02-timer.css" />
+</head>
 
-    <div class="timer">
-      <div class="field">
-        <span class="value" data-days>00</span>
-        <span class="label">Days</span>
+<body>
+  <p><a href="index.html">Go back</a></p>
+
+  <input type="text" id="datetime-picker" />
+  <button type="button" data-start>Start</button>
+
+  <div class="timer">
+    <div class="time-section" id="days" data-days>
+      <div class="time-group">
+        <div class="time-segment">
+          <div class="segment-display">
+            <div class="segment-display_top">0</div>
+            <div class="segment-display_bottom">0</div>
+            <div class="segment-overlay flip">
+              <div class="segment-overlay_top">0</div>
+              <div class="segment-overlay_bottom">0</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="time-segment">
+          <div class="segment-display">
+            <div class="segment-display_top">0</div>
+            <div class="segment-display_bottom">0</div>
+            <div class="segment-overlay flip">
+              <div class="segment-overlay_top">0</div>
+              <div class="segment-overlay_bottom">0</div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="field">
-        <span class="value" data-hours>00</span>
-        <span class="label">Hours</span>
-      </div>
-      <div class="field">
-        <span class="value" data-minutes>00</span>
-        <span class="label">Minutes</span>
-      </div>
-      <div class="field">
-        <span class="value" data-seconds>00</span>
-        <span class="label">Seconds</span>
-      </div>
+      <span class="label">Days</span>
     </div>
+    <div class="time-section" id="hours" data-hours>
+      <div class="time-group">
+        <div class="time-segment">
+          <div class="segment-display">
+            <div class="segment-display_top">0</div>
+            <div class="segment-display_bottom">0</div>
+            <div class="segment-overlay flip">
+              <div class="segment-overlay_top">0</div>
+              <div class="segment-overlay_bottom">0</div>
+            </div>
+          </div>
+        </div>
+    
+        <div class="time-segment">
+          <div class="segment-display">
+            <div class="segment-display_top">0</div>
+            <div class="segment-display_bottom">0</div>
+            <div class="segment-overlay flip">
+              <div class="segment-overlay_top">0</div>
+              <div class="segment-overlay_bottom">0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <span class="label">Hours</span>
+    </div>
+    <div class="time-section" id="minues" data-minutes>
+      <div class="time-group">
+        <div class="time-segment">
+          <div class="segment-display">
+            <div class="segment-display_top">0</div>
+            <div class="segment-display_bottom">0</div>
+            <div class="segment-overlay flip">
+              <div class="segment-overlay_top">0</div>
+              <div class="segment-overlay_bottom">0</div>
+            </div>
+          </div>
+        </div>
+    
+        <div class="time-segment">
+          <div class="segment-display">
+            <div class="segment-display_top">0</div>
+            <div class="segment-display_bottom">0</div>
+            <div class="segment-overlay flip">
+              <div class="segment-overlay_top">0</div>
+              <div class="segment-overlay_bottom">0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <span class="label">Minutes</span>
+    </div>
+    <div class="time-section" id="days" data-seconds>
+      <div class="time-group">
+        <div class="time-segment">
+          <div class="segment-display">
+            <div class="segment-display_top">0</div>
+            <div class="segment-display_bottom">0</div>
+            <div class="segment-overlay flip">
+              <div class="segment-overlay_top">0</div>
+              <div class="segment-overlay_bottom">0</div>
+            </div>
+          </div>
+        </div>
+    
+        <div class="time-segment">
+          <div class="segment-display">
+            <div class="segment-display_top">0</div>
+            <div class="segment-display_bottom">0</div>
+            <div class="segment-overlay flip">
+              <div class="segment-overlay_top">0</div>
+              <div class="segment-overlay_bottom">0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <span class="label">Seconds</span>
+    </div>
+  </div>
+  <!-- <span class="value" data-days>00</span>
+      <span class="label">Days</span>
+    </div>
+    <div class="field">
+      <span class="value" data-hours>00</span>
+      <span class="label">Hours</span>
+    </div>
+    <div class="field">
+      <span class="value" data-minutes>00</span>
+      <span class="label">Minutes</span>
+    </div>
+    <div class="field">
+      <span class="value" data-seconds>00</span>
+      <span class="label">Seconds</span>
+    </div>
+  </div> -->
 
-    <script src="js/02-timer.js" type="module"></script>
-  </body>
+  <script src="js/02-timer.js" type="module"></script>
+</body>
+
 </html>
