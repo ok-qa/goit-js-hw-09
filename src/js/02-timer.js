@@ -2,27 +2,26 @@
 import flatpickr from 'flatpickr';
 //Import flatpickr styles
 import 'flatpickr/dist/flatpickr.min.css';
-//import Notlifix
-import Notiflix from 'notiflix';
 
 //add querySelectors
-const startBtn = document.querySelector('button[data-start]');
+const startBtn = document.querySelector('[data-start]');
 const dataDays = document.querySelector('[data-days]');
 const dataHours = document.querySelector('[data-hours]');
 const dataMinutes = document.querySelector('[data-minutes]');
 const dataSeconds = document.querySelector('[data-seconds]');
 
-const pickDateTime = {
+//initialize picker
+const picker = {
   enableTime: true,
   time_24hr: true,
   defaultDate: new Date(),
   minuteIncrement: 1,
   onClose(selectedDates) {
     targetDate = selectedDates[0];
-    if (targetDate.getTime() < options.defaultDate.getTime()) {
+    if (targetDate.getTime() < picker.defaultDate.getTime()) {
       alertSound.play();
       Notiflix.Report.warning(
-        'Please choose a date in future'
+        'Please choose a date in the future!'
       );
       startBtn.classList.remove('valid-date');
       startBtn.classList.add('invalid-date');
@@ -33,81 +32,52 @@ const pickDateTime = {
   },
 };
 
-flatpickr('input#datetime-picker', pickDateTime);
+flatpickr('input#datetime-picker', picker);
 
-//start button event listener
+let targetDate = null;
+let timer = null;
+const interval = 1000;
+
 startBtn.addEventListener('click', () => {
-  if (targetDate && !timer) { 
-      timer = setInterval(() => {
-          let currentDateInMs = new Date().getTime();
-          let timeDiff = targetDate.getTime() - currentDateInMs;
-          if (timeDiff <= 0) {
-              clearInterval(timer);
-              timer = null; 
-              
-          }
-
-          function getTimeRemaining(targetDateTime) {
-            const nowTime = Date.now();
-            const complete = nowTime >= targetDateTime;
-
-            if (complete) {
-              return {
-                complete,
-                seconds: 0,
-                minutes: 0,
-                hours: 0,
-              };
+    if (targetDate && !timer) {
+        timer = setInterval(() => {
+            let currentDateInMs = new Date().getTime();
+            let timeDiff = targetDate.getTime() - currentDateInMs;
+            if (timeDiff <= 0) {
+                clearInterval(timer);
+                timer = null;
+             
             }
 
-            const secondsRemaining = Math.floor(
-              (targetDateTime - nowTime) / 1000
-            );
-            const hours = Math.floor(secondsRemaining / 60 / 60);
-            const minutes = Math.floor(secondsRemaining / 60) - hours * 60;
-            const seconds = secondsRemaining % 60;
+            return;
+        });
 
-            return {
-              complete,
-              seconds,
-              minutes,
-              hours,
-            };
-          }
-
-        //   let remainingTime = convertMs(timeDiff);
-        //   const timeUnits = {
-        //       days: daysSpan,
-        //       hours: hoursSpan,
-        //       minutes: minutesSpan,
-        //       seconds: secondsSpan,
-        //   };
+          let remainingTime = convertMs(timeDiff);
+        const timeUnits = {
+            days: daysSpan,
+            hours: hoursSpan,
+            minutes: minutesSpan,
+            seconds: secondsSpan,
+        };
           
-          // time update
-          function updateTimeSection(sectionID, timeValue) {
-            const firstNumber = Math.floor(timeValue / 10) || 0;
-            const secondNumber = timeValue % 10 || 0;
-            const sectionElement = document.getElementById(sectionID);
-            const timeSegments =
-              sectionElement.querySelectorAll('.time-segment');
-
-            updateTimeSegment(timeSegments[0], firstNumber);
-            updateTimeSegment(timeSegments[1], secondNumber);
-          }
+        // // Оновлення відображення часу на сторінці
+        // Object.keys(timeUnits).forEach((unit) => {
+        //     timeUnits[unit].textContent = String(remainingTime[unit]).padStart(2, '0');
+        // });
           
-          const countdownTimer = setInterval(() => {
-            const isComplete = updateAllSegments();
+    }  
 
-            if (isComplete) {
-              clearInterval(countdownTimer);
-            }
-          }, 1000);
+      }, interval);
 
-        startBtn.disabled = true;
-        timerIsActive = true;
-        dateTimePicker.set('readOnly', true);
-    }
-})
+
+function getTimeSegmentElements(segmentElement) {
+  const segmentDisplay = segmentElement.querySelector('.segment-display');
+  const segmentDisplayTop = segmentDisplay.querySelector(
+    '.segment-display__top'
+  );
+  const segmentDisplayBottom = segmentDisplay.querySelector(
+    '.segment-display__bottom'
+  );
 
   const segmentOverlay = segmentDisplay.querySelector('.segment-overlay');
   const segmentOverlayTop = segmentOverlay.querySelector(
@@ -165,41 +135,41 @@ function updateTimeSegment(segmentElement, timeValue) {
   );
 }
 
-// function updateTimeSection(sectionID, timeValue) {
-//   const firstNumber = Math.floor(timeValue / 10) || 0;
-//   const secondNumber = timeValue % 10 || 0;
-//   const sectionElement = document.getElementById(sectionID);
-//   const timeSegments = sectionElement.querySelectorAll('.time-segment');
+function updateTimeSection(sectionID, timeValue) {
+  const firstNumber = Math.floor(timeValue / 10) || 0;
+  const secondNumber = timeValue % 10 || 0;
+  const sectionElement = document.getElementById(sectionID);
+  const timeSegments = sectionElement.querySelectorAll('.time-segment');
 
-//   updateTimeSegment(timeSegments[0], firstNumber);
-//   updateTimeSegment(timeSegments[1], secondNumber);
-// }
+  updateTimeSegment(timeSegments[0], firstNumber);
+  updateTimeSegment(timeSegments[1], secondNumber);
+}
 
-// function getTimeRemaining(targetDateTime) {
-//   const nowTime = Date.now();
-//   const complete = nowTime >= targetDateTime;
+function getTimeRemaining(targetDateTime) {
+  const nowTime = Date.now();
+  const complete = nowTime >= targetDateTime;
 
-//   if (complete) {
-//     return {
-//       complete,
-//       seconds: 0,
-//       minutes: 0,
-//       hours: 0,
-//     };
-//   }
+  if (complete) {
+    return {
+      complete,
+      seconds: 0,
+      minutes: 0,
+      hours: 0,
+    };
+  }
 
-//   const secondsRemaining = Math.floor((targetDateTime - nowTime) / 1000);
-//   const hours = Math.floor(secondsRemaining / 60 / 60);
-//   const minutes = Math.floor(secondsRemaining / 60) - hours * 60;
-//   const seconds = secondsRemaining % 60;
+  const secondsRemaining = Math.floor((targetDateTime - nowTime) / 1000);
+  const hours = Math.floor(secondsRemaining / 60 / 60);
+  const minutes = Math.floor(secondsRemaining / 60) - hours * 60;
+  const seconds = secondsRemaining % 60;
 
-//   return {
-//     complete,
-//     seconds,
-//     minutes,
-//     hours,
-//   };
-// }
+  return {
+    complete,
+    seconds,
+    minutes,
+    hours,
+  };
+}
 
 function updateAllSegments() {
   const timeRemainingBits = getTimeRemaining(new Date(targetDate).getTime());
@@ -210,3 +180,13 @@ function updateAllSegments() {
 
   return timeRemainingBits.complete;
 }
+
+const countdownTimer = setInterval(() => {
+  const isComplete = updateAllSegments();
+
+  if (isComplete) {
+    clearInterval(countdownTimer);
+  }
+}, interval);
+
+updateAllSegments();
