@@ -1,4 +1,4 @@
-import { Notify } from 'notiflix/build/notiflix-notify-aio';
+import Notiflix from 'notiflix';
 
 //form and inputs
 const form = document.querySelector('form');
@@ -30,7 +30,7 @@ function onSubmit(event) {
 
   for (let i = 1; i <= amountValue; i += 1) {
     const startPosition = i + 1;
-    const startDelay = firstDelay + startPosition * delayStep;
+    const startDelay = delayValue + startPosition * stepValue;
     createPromise(i, delayValue)
       .then(({ position, delay }) => {
         Notiflix.Notify.success(`Fulfilled promise ${position} in ${delay}ms`);
