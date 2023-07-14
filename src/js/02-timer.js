@@ -172,3 +172,49 @@ function updateTimeSection(sectionID, timeValue) {
   updateTimeSegment(timeSegments[0], firstNumber);
   updateTimeSegment(timeSegments[1], secondNumber);
 }
+
+function getTimeRemaining(targetDate) {
+  const nowTime = Date.now();
+  const complete = nowTime >= targetDate;
+
+  if (complete) {
+    return {
+      complete,
+      seconds: 0,
+      minutes: 0,
+      hours: 0,
+    };
+  }
+
+//   const secondsRemaining = Math.floor((targetDateTime - nowTime) / 1000);
+//   const hours = Math.floor(secondsRemaining / 60 / 60);
+//   const minutes = Math.floor(secondsRemaining / 60) - hours * 60;
+//   const seconds = secondsRemaining % 60;
+
+  return {
+    complete,
+    seconds,
+    minutes,
+    hours,
+  };
+}
+
+function updateAllSegments() {
+  const timeRemainingBits = getTimeRemaining(new Date(targetDate).getTime());
+
+  updateTimeSection('seconds', timeRemainingBits.seconds);
+  updateTimeSection('minutes', timeRemainingBits.minutes);
+  updateTimeSection('hours', timeRemainingBits.hours);
+
+  return timeRemainingBits.complete;
+}
+
+const countdownTimer = setInterval(() => {
+  const isComplete = updateAllSegments();
+
+  if (isComplete) {
+    clearInterval(countdownTimer);
+  }
+}, 1000);
+
+updateAllSegments();
